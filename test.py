@@ -30,7 +30,6 @@ X_test = pd.DataFrame(pd.concat([X_test.bookingID,pd.DataFrame(scaled_features),
                            index=X_test.index, columns=['bookingID', 'Accuracy', 'Bearing', 'acceleration_x', 'acceleration_y',
        'acceleration_z', 'gyro_x', 'gyro_y', 'gyro_z', 'Speed','second'])
 
-#Padding
 X_test.set_index(['bookingID', 'second'], inplace=True)
 X_test_final = []
 for i in y_test['bookingID']:
@@ -70,10 +69,11 @@ def lagging(data, n_in=1, n_out=1, dropnan=True):
 	agg.columns = names
 	return agg
 
+
 dummy_X_test = []
 
-for i in range (0, len(X_test)):
-    dummy_X_test.append(np.array(lagging(X_test[i],5)))
+for i in range (0, len(X_test_final)):
+    dummy_X_test.append(np.array(lagging(X_test_final[i],5)))
 dummy_X_test = np.array(dummy_X_test)
 X_test = np.nan_to_num(dummy_X_test)
 del dummy_X_test
@@ -124,5 +124,5 @@ score than having at the traditional 0.5 across a few models I have trained.
 However, I will still leave the threshold at 0.5 for now. 
 '''
 label = (model_ouput>0.5).astype(int)
-score = roc_auc_score(y_test, label)
+score = roc_auc_score(y_test['label'], label)
 print(score)
