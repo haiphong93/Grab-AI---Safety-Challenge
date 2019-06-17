@@ -8,12 +8,12 @@ import glob
 
 #Data pre-processing
 l =[]
-for f in glob.glob('test_features/part-000*'):
+for f in glob.glob('test_features/part-000*'): #Modify directory here if needed
     df = pd.read_csv(f)
     l.append(df)
 X_test = pd.concat(l, axis=0, ignore_index=True)
 
-y_test = pd.read_csv(filepath_or_buffer='test_labels/part-000*')
+y_test = pd.read_csv(filepath_or_buffer='test_labels/part-000*') #Modify directory here if needed
 #Same with training label, keep the first encountered label
 y_test = y_test.set_index('bookingID', drop = False)
 y_test = y_test.loc[~y_test.index.duplicated(keep='first')]
@@ -103,10 +103,10 @@ model = Sequential()
 model.add(Conv1D(filters = 64, kernel_size= 3, strides = 2, 
                   input_shape=(seq_len, 48),
                   activity_regularizer=l1(0.001)))
-model.add(Dropout(0.1))
+model.add(Dropout(0.2))
 model.add(Conv1D(filters = 64, kernel_size= 3, strides = 2,
                   activity_regularizer=l1(0.001)))
-model.add(Dropout(0.1))
+model.add(Dropout(0.2))
 model.add(MaxPooling1D())
 model.add(Flatten())
 model.add(Dense(50, activation = 'relu'))
@@ -115,6 +115,13 @@ model.compile(loss='binary_crossentropy', optimizer=adam, metrics = [roc_auc])
 
 #Load best weights and predict:
 model.load_weights('best_model.hdf5')
-label = model.predict(X_test)
-score = roc_auc_score(y_test, (label>0.5).astype(int))
+model_ouput = model.predict(X_test)
+'''
+#Convert neural network output to 0 and 1 label.
+I noticed that having the threshold for the conversion at 0.45 gives better 
+score than having at the traditional 0.5 across a few models I have trained.
+However, I will still leave the threshold at 0.5 for now. 
+'''
+label = (model_ouput>0.5).astype(int)
+score = roc_auc_score(y_test, label)
 print(score)

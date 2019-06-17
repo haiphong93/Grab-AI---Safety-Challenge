@@ -145,17 +145,17 @@ adam = Adam(lr=learning_rate)
 chk= ModelCheckpoint('best_model.hdf5', save_best_only=True,
                      monitor='val_roc_auc', mode='max') #Save best model weights
 #Callbacks
-callbacks = EarlyStopping(monitor='val_roc_auc', patience=100,
+callbacks = EarlyStopping(monitor='val_roc_auc', patience=1000,
                              verbose=1, mode='max')
 #Initialize model
 model = Sequential()
 model.add(Conv1D(filters = 64, kernel_size= 3, strides = 2, 
                   input_shape=(seq_len, 48),
                   activity_regularizer=l1(0.001)))
-model.add(Dropout(0.1))
+model.add(Dropout(0.2))
 model.add(Conv1D(filters = 64, kernel_size= 3, strides = 2,
                   activity_regularizer=l1(0.001)))
-model.add(Dropout(0.1))
+model.add(Dropout(0.2))
 model.add(MaxPooling1D())
 model.add(Flatten())
 model.add(Dense(50, activation = 'relu'))
@@ -167,7 +167,14 @@ model.fit(X_train, y_train, epochs=num_epochs, batch_size=batch_size,
 
 #Load best weights and predict:
 model.load_weights('best_model.hdf5')
-label = model.predict(X_test)
-score = roc_auc_score(y_test, (label>0.5).astype(int))
+model_ouput = model.predict(X_test)
+'''
+#Convert neural network output to 0 and 1 label.
+I noticed that having the threshold for the conversion at 0.45 gives better 
+score than having at the traditional 0.5 across a few models I have trained.
+However, I will still leave the threshold at 0.5 for now. 
+'''
+label = (model_ouput>0.5).astype(int)
+score = roc_auc_score(y_test, label)
 print(score)
 
