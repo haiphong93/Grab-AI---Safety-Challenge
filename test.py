@@ -13,7 +13,7 @@ for f in glob.glob('test_features/part-000*'): #Modify directory here if needed
     l.append(df)
 X_test = pd.concat(l, axis=0, ignore_index=True)
 
-y_test = pd.read_csv(filepath_or_buffer='test_labels/part-000*') #Modify directory here if needed
+y_test = pd.read_csv(filepath_or_buffer=glob.glob('test_labels/part-000*')[0]) #Modify directory here if needed
 #Same with training label, keep the first encountered label
 y_test = y_test.set_index('bookingID', drop = False)
 y_test = y_test.loc[~y_test.index.duplicated(keep='first')]
