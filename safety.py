@@ -33,6 +33,7 @@ X = pd.DataFrame(pd.concat([X.bookingID,pd.DataFrame(scaled_features),X.second],
 
 #Padding the data with zeros so that the sample size for each ID is 1500
 #1500 was chosen because it was approximately the 80th percentile in sample length
+#Code inspired by Aishwarya Singh, link: https://www.analyticsvidhya.com/blog/2019/01/introduction-time-series-classification/
 X.set_index(['bookingID', 'second'], inplace=True)
 X_final = []
 for i in y['bookingID']:
