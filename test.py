@@ -30,6 +30,7 @@ X_test = pd.DataFrame(pd.concat([X_test.bookingID,pd.DataFrame(scaled_features),
                            index=X_test.index, columns=['bookingID', 'Accuracy', 'Bearing', 'acceleration_x', 'acceleration_y',
        'acceleration_z', 'gyro_x', 'gyro_y', 'gyro_z', 'Speed','second'])
 
+#Padding
 X_test.set_index(['bookingID', 'second'], inplace=True)
 X_test_final = []
 for i in y_test['bookingID']:
