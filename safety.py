@@ -169,6 +169,8 @@ model.fit(X_train, y_train, epochs=num_epochs, batch_size=batch_size,
 #Load best weights and predict:
 model.load_weights('best_model.hdf5')
 model_ouput = model.predict(X_test)
+score = roc_auc_score(y_test, model_ouput)
+print('ROC AUC for raw neural network probability:', score)
 '''
 #Convert neural network output to 0 and 1 label.
 I noticed that having the threshold for the conversion at 0.45 gives better 
@@ -177,5 +179,6 @@ However, I will still leave the threshold at 0.5 for now.
 '''
 label = (model_ouput>0.5).astype(int)
 score = roc_auc_score(y_test, label)
-print(score)
+print('ROC AUC for 0-1 label conversion output:',score)
+
 
